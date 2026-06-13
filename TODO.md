@@ -8,10 +8,4 @@
 - [x] Criar GitHub Actions
 - [x] Adicionar Bandit (análise estática)
 - [x] Adicionar análise de dependências (pip-audit / Safety)
-
-### Segurança
-
-- [ ] Rodar OWASP ZAP
-
-### Entrega
-- [ ] Montar relatório final
+- [x] Rodar OWASP ZAP

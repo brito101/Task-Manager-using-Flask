@@ -130,3 +130,4 @@ dmypy.json
 todo_project/todo_project/site.db
 bandit-report.txt
 pip-audit-report.json
+zap-report/
