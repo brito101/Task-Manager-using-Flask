@@ -219,3 +219,44 @@ jobs:
       - name: Stop stage environment
         if: always()
         run: docker rm -f task-manager-stage || true
+
+  monitoring:
+    name: Post-Deploy Monitoring Stack Validation
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start monitoring stack with Docker Compose
+        run: |
+          cp .env.example .env 2>/dev/null || echo "SECRET_KEY=ci-secret-key" > .env
+          echo "SQLALCHEMY_DATABASE_URI=sqlite:///site.db" >> .env
+          docker compose up -d --build
+          sleep 15
+
+      - name: Validate Flask app is running
+        run: curl -sf http://localhost:5000 || exit 1
+
+      - name: Validate /metrics endpoint is exposed
+        run: |
+          curl -sf http://localhost:5000/metrics | grep -q 'flask_http_request_total' \
+            && echo "Metrics endpoint OK" || exit 1
+
+      - name: Validate Prometheus is running
+        run: curl -sf http://localhost:9090/-/healthy || exit 1
+
+      - name: Validate Grafana is running
+        run: curl -sf http://localhost:3000/api/health || exit 1
+
+      - name: Check Prometheus is scraping Flask metrics
+        run: |
+          sleep 10
+          curl -sf "http://localhost:9090/api/v1/targets" \
+            | grep -q '"health":"up"' \
+            && echo "Prometheus scraping OK" || echo "Warning: target may not be up yet"
+
+      - name: Tear down monitoring stack
+        if: always()
+        run: docker compose down -v

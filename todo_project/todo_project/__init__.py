@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
+from prometheus_flask_exporter import PrometheusMetrics
 
 load_dotenv()
 
@@ -14,6 +15,9 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production'
 db = SQLAlchemy(app)
+
+metrics = PrometheusMetrics(app)
+metrics.info('app_info', 'Task Manager Flask', version='1.0.0')
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
