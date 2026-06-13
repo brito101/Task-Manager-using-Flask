@@ -137,6 +137,8 @@ jobs:
     name: Dynamic Security Analysis (OWASP ZAP)
     runs-on: ubuntu-latest
     needs: build
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -149,33 +151,21 @@ jobs:
             -e SECRET_KEY=ci-secret-key \
             -e "SQLALCHEMY_DATABASE_URI=sqlite:///site.db" \
             -p 5000:5000 task-manager-flask:ci
-          sleep 5
 
       - name: Wait for application to be ready
         run: |
-          for i in $(seq 1 10); do
-            curl -sf http://localhost:5000 && break || sleep 3
+          for i in $(seq 1 15); do
+            curl -sf http://localhost:5000 && echo "App ready" && break || sleep 3
           done
 
       - name: Run OWASP ZAP Baseline Scan
-        run: |
-          mkdir -p zap-report
-          docker run --rm --network host \
-            -v ${{ github.workspace }}/zap-report:/zap/wrk/:rw \
-            ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py \
-            -t http://localhost:5000 \
-            -r zap-report.html \
-            -J zap-report.json \
-            -w zap-report.md \
-            -I
-
-      - name: Upload ZAP report
-        if: always()
-        uses: actions/upload-artifact@v4
+        uses: zaproxy/action-baseline@v0.14.0
         with:
-          name: zap-report
-          path: zap-report/
+          target: 'http://localhost:5000'
+          fail_action: false
+          allow_issue_writing: false
+          artifact_name: zap-report
+          cmd_options: '-I'
 
       - name: Stop application container
         if: always()
