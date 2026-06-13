@@ -3,14 +3,9 @@
 - [x] Aplicação rodando localmente
 - [x] Inicializar Git e subir para GitHub
 - [X] Print da aplicação funcionando
-- [X] Criar branches `dev`, `stage` e `main`
-
-### Infraestrutura
-
-- [ ] Criar Dockerfile e rodar em container
-
-### CI/CD
-- [ ] Criar GitHub Actions
+- [x] Criar branches `dev`, `stage` e `main`
+- [x] Criar Dockerfile e rodar em container
+- [x] Criar GitHub Actions
 
 ### Segurança
 - [ ] Adicionar Bandit (análise estática)
