@@ -61,7 +61,7 @@ jobs:
         run: |
           docker run -d --name task-manager-test \
             -e SECRET_KEY=ci-secret-key \
-            -e SQLALCHEMY_DATABASE_URI=sqlite:///site.db \
+            -e "SQLALCHEMY_DATABASE_URI=sqlite:///site.db" \
             -p 8080:5000 task-manager-flask:ci
           sleep 5
 
@@ -104,3 +104,31 @@ jobs:
         with:
           name: bandit-report
           path: bandit-report.txt
+
+  dependency_audit:
+    name: Dependency Vulnerability Analysis with pip-audit
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      - name: Run dependency audit
+        run: |
+          pip-audit -r requirements.txt -f json -o pip-audit-report.json || true
+          pip-audit -r requirements.txt || true
+
+      - name: Upload pip-audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip-audit-report
+          path: pip-audit-report.json

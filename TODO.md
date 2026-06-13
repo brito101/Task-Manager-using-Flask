@@ -6,11 +6,11 @@
 - [x] Criar branches `dev`, `stage` e `main`
 - [x] Criar Dockerfile e rodar em container
 - [x] Criar GitHub Actions
-- [xW] Adicionar Bandit (análise estática)
+- [x] Adicionar Bandit (análise estática)
+- [x] Adicionar análise de dependências (pip-audit / Safety)
 
 ### Segurança
 
-- [ ] Adicionar análise de dependências (pip-audit / Safety)
 - [ ] Rodar OWASP ZAP
 
 ### Entrega

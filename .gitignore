@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 todo_project/todo_project/site.db
 bandit-report.txt
+pip-audit-report.json
